@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1568238177 source:c:\users\felip\documents\material de estudo\universidade\disciplinas\estrutura de dados i\trabalho 1\rankingdepalavras\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	"Mapa.h"
+
+1567825980 c:\users\felip\documents\material de estudo\universidade\disciplinas\estrutura de dados i\trabalho 1\rankingdepalavras\mapa.h
+
+1568237845 source:c:\users\felip\documents\material de estudo\universidade\disciplinas\estrutura de dados i\trabalho 1\rankingdepalavras\mapa.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"Mapa.h"
+
