@@ -35,10 +35,12 @@ void insere_termo(Mapa *mapa, char *s){
 
 	if(mapa != NULL && s != NULL){
 
+        int i,j,k;
+
         //Verifica se existe carcteres especiais
         char charEspeciais[7] = {'.',',',':',';','!','?'};
 
-        int i,j = (strlen(s)-1);
+        j = (strlen(s)-1);
         for(i=0; i < 7; i++){
             if( s[j] == charEspeciais[i] ){
                 s[j] = '\0';
@@ -89,7 +91,40 @@ void insere_termo(Mapa *mapa, char *s){
 			}
 
 		}else{//Se a palavra foi cadastrada então ordena
-            ordena_items(mapa);
+            //Ordena em ordem decrescente
+
+            i=1;
+            while(i < mapa->total){ //Descobre o item desordenado
+                if(mapa->lista[i]->conta > mapa->lista[i-1]->conta){
+                    break;
+                }
+                i++;
+            }
+
+            if(i != mapa->total){ //Se tiver o elemento desordenado
+
+                Item *item = mapa->lista[i];//Reserva o elemento desordenado
+
+                //Acha a posicao certa para colocar o elemento
+                j = 0;
+                while(j < mapa->total){
+                    if(item->conta > mapa->lista[j]->conta){
+                        break;
+                    }
+                    j++;
+                }
+
+                /*Deslocar os elementos acima da posição do elemento
+                desordenado para uma posição abaixo até a posição onde o
+                elemento vai ser colocado*/
+                for(k=i; k > j; k--){
+                    mapa->lista[k] = mapa->lista[k-1];
+                }
+
+                //Colocar o elemento no lugar certo
+                mapa->lista[j] = item;
+
+            }
 		}
 
 	}else{
@@ -107,7 +142,7 @@ int incrementa(Mapa *mapa,char *s){
             int i=0;
             while(i < mapa->total){
 
-                if(strcmp(mapa->lista[i]->termo,s) == 0){ //iguais
+                if(strcasecmp(mapa->lista[i]->termo,s) == 0){ //iguais
                     escreve_cont(mapa,mapa->lista[i]->termo,
                         le_contador(mapa,mapa->lista[i]->termo) + 1);
                     break;
@@ -129,44 +164,6 @@ int incrementa(Mapa *mapa,char *s){
 
 }
 
-void ordena_items(Mapa *mapa){
-    //Ordena em ordem decrescente
-
-    int i=1,j=0,k;
-
-    while(i < mapa->total){ //Descobre o item desordenado
-        if(mapa->lista[i]->conta > mapa->lista[i-1]->conta){
-            break;
-        }
-        i++;
-    }
-
-    if(i != mapa->total){ //Se tiver o elemento desordenado
-
-        Item *item = mapa->lista[i];//Reserva o elemento desordenado
-
-        //Acha a posicao certa para colocar o elemento
-        while(j < mapa->total){
-            if(item->conta > mapa->lista[j]->conta){
-                break;
-            }
-            j++;
-        }
-
-        /*Deslocar os elementos acima da posição do elemento
-        desordenado para uma posição abaixo até a posição onde o
-        elemento vai ser colocado*/
-        for(k=i; k > j; k--){
-            mapa->lista[k] = mapa->lista[k-1];
-        }
-
-        //Colocar o elemento no lugar certo
-        mapa->lista[j] = item;
-
-    }
-
-}
-
 int escreve_cont(Mapa *mp, char *s, int c){
 
 	if(mp != NULL && s != NULL && c >= 0){
@@ -174,7 +171,7 @@ int escreve_cont(Mapa *mp, char *s, int c){
         int i=0;
         while(i < mp->total){
 
-            if(strcmp(mp->lista[i]->termo,s) == 0){ //iguais
+            if(strcasecmp(mp->lista[i]->termo,s) == 0){ //iguais
                 mp->lista[i]->conta = c;
                 break;
             }
@@ -200,7 +197,7 @@ int le_contador(Mapa *mp, char *s){
 
         int i=0;
         while(i < mp->total){
-            if(strcmp(mp->lista[i]->termo,s) == 0){ //iguais
+            if(strcasecmp(mp->lista[i]->termo,s) == 0){ //iguais
                 break;
             }
             i++;
@@ -228,7 +225,7 @@ void remove_termo(Mapa *mp, char *s){
 			int i=0;
 			while(i < mp->total){
 
-                if(strcmp(mp->lista[i]->termo,s) == 0){
+                if(strcasecmp(mp->lista[i]->termo,s) == 0){
                     break;
                 }
 
@@ -300,8 +297,6 @@ void libera_mapa(Mapa *mp){
 
 		free(mp);
 
-	}else{
-        printf(ERRO_VAL);
 	}
 
 }
@@ -345,46 +340,5 @@ void le_termo(Mapa *mp, int i, char *t, int *c){
 	}else{
 		printf(ERRO_VAL);
 	}
-
-}
-
-void exibir_palavras(Mapa *mapa){
-
-    int i,j,k;
-
-    printf("\n\n");
-    for(i=0; i < 40; i++){
-        printf("-");
-    }
-
-    printf("\n");
-    printf("| TOTAL: %-29d |\n",mapa->total);
-    printf("| BLOCOS: %-27d  |\n",mapa->blocos);
-    for(i=0; i < 40; i++){
-        printf("-");
-    }
-    printf("\n");
-
-    printf("|%4s PALAVRA %5s|%4s QUANTIDADE %3s|\n","","","","");
-
-    for(i=0; i < mapa->total; i++){
-        for(j=0; j < 40; j++){
-            printf("-");
-        }
-        printf("\n");
-
-        strupr(mapa->lista[i]->termo);
-        printf("|%s", mapa->lista[i]->termo);
-        j = 18 - strlen(mapa->lista[i]->termo);
-        for(k=0; k < j; k++){
-            printf("%1s","");
-        }
-        printf("|%10d%10s\n",mapa->lista[i]->conta,"|");
-    }
-
-    for(i=0; i < 40; i++){
-        printf("-");
-    }
-    printf("\n");
 
 }
